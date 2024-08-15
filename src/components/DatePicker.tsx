@@ -6,6 +6,7 @@ interface Props {}
 const DatePicker = (props: Props) => {
   const [date, setDate] = useState<string>("");
   const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDate(e.target.value);
@@ -13,6 +14,7 @@ const DatePicker = (props: Props) => {
 
   const getResponse = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent default form submission
+    setLoading(true);
 
     try {
       const res = await fetch("/api/generate", {
@@ -32,6 +34,8 @@ const DatePicker = (props: Props) => {
     } catch (error) {
       console.error(error);
       setResponse("Error occurred while fetching data.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,13 +63,15 @@ const DatePicker = (props: Props) => {
             type="submit"
             className="px-4 py-2 rounded-lg shadow-lg text-white bg-green-500 hover:bg-green-600 w-52"
           >
-            Generate
+            {loading ? "Generating..." : "Generate"}
           </button>
         </div>
       </form>
-      <div className="py-2 px-5 text-justify lg:px-20
-      ">
-        <p>{response}</p>
+      <div
+        className="py-2 px-5 text-justify lg:px-20
+      "
+      >
+        {response && <p>{response}</p>}
       </div>
     </div>
   );
